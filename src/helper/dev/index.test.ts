@@ -1,7 +1,7 @@
 import { Hono } from '../../hono'
 import { RegExpRouter } from '../../router/reg-exp-router'
 import type { Handler, MiddlewareHandler } from '../../types'
-import { inspectRoutes, showRoutes, getRouterName } from '.'
+import { getRouterName, inspectRoutes, showRoutes } from '.'
 
 const namedMiddleware: MiddlewareHandler = (_, next) => next()
 const namedHandler: Handler = (c) => c.text('hi')
@@ -171,7 +171,7 @@ describe('showRoutes() in NO_COLOR', () => {
   })
 })
 
-describe('geRouterName()', () => {
+describe('getRouterName()', () => {
   it('Should return the correct router name', async () => {
     const app = new Hono({
       router: new RegExpRouter(),

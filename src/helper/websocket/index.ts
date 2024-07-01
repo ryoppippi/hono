@@ -1,3 +1,8 @@
+/**
+ * @module
+ * WebSocket Helper for Hono.
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Context } from '../../context'
 import type { MiddlewareHandler } from '../../types'
@@ -15,8 +20,9 @@ export interface WSEvents {
 /**
  * Upgrade WebSocket Type
  */
-export type UpgradeWebSocket = (
-  createEvents: (c: Context) => WSEvents | Promise<WSEvents>
+export type UpgradeWebSocket<T = any> = (
+  createEvents: (c: Context) => WSEvents | Promise<WSEvents>,
+  options?: T
 ) => MiddlewareHandler<
   any,
   string,

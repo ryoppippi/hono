@@ -1,9 +1,18 @@
+/**
+ * @module
+ * Stream utility.
+ */
+
 export class StreamingApi {
   private writer: WritableStreamDefaultWriter<Uint8Array>
   private encoder: TextEncoder
   private writable: WritableStream
   private abortSubscribers: (() => void | Promise<void>)[] = []
   responseReadable: ReadableStream
+  /**
+   * Whether the stream has been aborted.
+   */
+  aborted: boolean = false
 
   constructor(writable: WritableStream, _readable: ReadableStream) {
     this.writable = writable
@@ -25,7 +34,7 @@ export class StreamingApi {
         done ? controller.close() : controller.enqueue(value)
       },
       cancel: () => {
-        this.abortSubscribers.forEach((subscriber) => subscriber())
+        this.abort()
       },
     })
   }
@@ -67,5 +76,16 @@ export class StreamingApi {
 
   onAbort(listener: () => void | Promise<void>) {
     this.abortSubscribers.push(listener)
+  }
+
+  /**
+   * Abort the stream.
+   * You can call this method when stream is aborted by external event.
+   */
+  abort() {
+    if (!this.aborted) {
+      this.aborted = true
+      this.abortSubscribers.forEach((subscriber) => subscriber())
+    }
   }
 }

@@ -1,10 +1,13 @@
 import { raw } from '../helper/html'
 import { escapeToBuffer, stringBufferToString } from '../utils/html'
-import type { StringBuffer, HtmlEscaped, HtmlEscapedString } from '../utils/html'
+import type { HtmlEscaped, HtmlEscapedString, StringBuffer } from '../utils/html'
 import type { Context } from './context'
 import { globalContexts } from './context'
-import type { IntrinsicElements as IntrinsicElementsDefined } from './intrinsic-elements'
-import { normalizeIntrinsicElementProps, styleObjectForEach } from './utils'
+import type {
+  JSX as HonoJSX,
+  IntrinsicElements as IntrinsicElementsDefined,
+} from './intrinsic-elements'
+import { normalizeIntrinsicElementKey, styleObjectForEach } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Props = Record<string, any>
@@ -13,18 +16,16 @@ export type FC<P = Props> = {
   defaultProps?: Partial<P> | undefined
   displayName?: string | undefined
 }
-export type DOMAttributes = Hono.HTMLAttributes
+export type DOMAttributes = HonoJSX.HTMLAttributes
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    type Element = HtmlEscapedString | Promise<HtmlEscapedString>
-    interface ElementChildrenAttribute {
-      children: Child
-    }
-    interface IntrinsicElements extends IntrinsicElementsDefined {
-      [tagName: string]: Props
-    }
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace JSX {
+  export type Element = HtmlEscapedString | Promise<HtmlEscapedString>
+  export interface ElementChildrenAttribute {
+    children: Child
+  }
+  export interface IntrinsicElements extends IntrinsicElementsDefined {
+    [tagName: string]: Props
   }
 }
 
@@ -151,11 +152,8 @@ export class JSXNode implements HtmlEscaped {
 
     buffer[0] += `<${tag}`
 
-    const propsKeys = Object.keys(props || {})
-
-    for (let i = 0, len = propsKeys.length; i < len; i++) {
-      const key = propsKeys[i]
-      const v = props[key]
+    for (let [key, v] of Object.entries(props)) {
+      key = normalizeIntrinsicElementKey(key)
       if (key === 'children') {
         // skip children
       } else if (key === 'style' && typeof v === 'object') {
@@ -282,7 +280,6 @@ export const jsxFn = (
   if (typeof tag === 'function') {
     return new JSXFunctionNode(tag, props, children)
   } else {
-    normalizeIntrinsicElementProps(props)
     return new JSXNode(tag, props, children)
   }
 }
@@ -359,3 +356,5 @@ export const cloneElement = <T extends JSXNode | JSX.Element>(
     ...(children as (string | number | HtmlEscapedString)[])
   ) as T
 }
+
+export const reactAPICompatVersion = '18.0.0-hono-jsx'

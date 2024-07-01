@@ -1,10 +1,15 @@
+/**
+ * @module
+ * Factory Helper for Hono.
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Hono } from '../../hono'
 import type { Env, H, HandlerResponse, Input, MiddlewareHandler } from '../../types'
 
 type InitApp<E extends Env = Env> = (app: Hono<E>) => void
 
-interface CreateHandlersInterface<E extends Env, P extends string> {
+export interface CreateHandlersInterface<E extends Env, P extends string> {
   <I extends Input = {}, R extends HandlerResponse<any> = any>(handler1: H<E, P, I, R>): [
     H<E, P, I, R>
   ]

@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Dev Helper for Hono.
+ */
+
 import type { Hono } from '../../hono'
 import type { Env, RouterRoute } from '../../types'
 import { getColorEnabled } from '../../utils/color'
@@ -31,7 +36,7 @@ export const inspectRoutes = <E extends Env>(hono: Hono<E>): RouteData[] => {
   })
 }
 
-export const showRoutes = <E extends Env>(hono: Hono<E>, opts?: ShowRoutesOptions) => {
+export const showRoutes = <E extends Env>(hono: Hono<E>, opts?: ShowRoutesOptions): void => {
   const colorEnabled = opts?.colorize ?? getColorEnabled()
   const routeData: Record<string, RouteData[]> = {}
   let maxMethodLength = 0

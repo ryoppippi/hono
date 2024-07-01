@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Serve Static Middleware for Hono.
+ */
+
 import type { Context, Data } from '../../context'
 import type { Env, MiddlewareHandler } from '../../types'
 import { getFilePath, getFilePathWithoutDefaultDocument } from '../../utils/filepath'
@@ -59,9 +64,12 @@ export const serveStatic = <E extends Env = Env>(
         return await next()
       }
       pathWithOutDefaultDocument = pathResolve(pathWithOutDefaultDocument)
-      content = await getContent(pathWithOutDefaultDocument, c)
-      if (content) {
-        path = pathWithOutDefaultDocument
+
+      if (pathWithOutDefaultDocument !== path) {
+        content = await getContent(pathWithOutDefaultDocument, c)
+        if (content) {
+          path = pathWithOutDefaultDocument
+        }
       }
     }
 
